@@ -1,0 +1,75 @@
+# ============================================================================
+# ros2_control configuration for the surveillance robot (ROS 2 Jazzy).
+#
+# Loaded by the gz_ros2_control plugin (see gazebo.xacro) which starts the
+# controller_manager inside the Gazebo process. Two controllers are spawned:
+#   * joint_state_broadcaster  -> publishes /joint_states
+#   * diff_drive_controller    -> consumes cmd_vel, drives the wheels,
+#                                 publishes /odom and the odom->base_footprint TF
+#
+# PARAMETER SYNC WARNING
+# ----------------------
+# wheel_separation and wheel_radius below MUST match dimensions.xacro:
+#     wheel_separation = 0.45   (dimensions.xacro: wheel_separation)
+#     wheel_radius     = 0.10   (dimensions.xacro: wheel_radius)
+# The controller needs them as plain YAML numbers, so they are duplicated here.
+# If you change the wheels in dimensions.xacro, change them here too, otherwise
+# odometry distance/heading will drift (see spec section 27).
+# ============================================================================
+
+controller_manager:
+  ros__parameters:
+    update_rate: 50  # Hz
+    use_sim_time: true
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+diff_drive_controller:
+  ros__parameters:
+    # Joint names must match wheels.xacro / ros2_control.xacro exactly.
+    left_wheel_names: ["left_wheel_joint"]
+    right_wheel_names: ["right_wheel_joint"]
+
+    # Kept in sync with dimensions.xacro (see warning above).
+    wheel_separation: 0.45
+    wheel_radius: 0.10
+
+    # Calibration multipliers (leave at 1.0 unless correcting measured drift).
+    wheel_separation_multiplier: 1.0
+    left_wheel_radius_multiplier: 1.0
+    right_wheel_radius_multiplier: 1.0
+
+    # Odometry output.
+    publish_rate: 50.0
+    odom_frame_id: odom
+    base_frame_id: base_footprint
+    open_loop: false
+    enable_odom_tf: true
+
+    pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
+    twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
+
+    # Command interface / safety.
+    # Jazzy's diff_drive_controller consumes geometry_msgs/msg/TwistStamped on
+    # ~/cmd_vel. The launch file remaps ~/cmd_vel -> /cmd_vel.
+    cmd_vel_timeout: 0.5  # seconds; stop if no command arrives
+    use_stamped_vel: true
+
+    # Velocity/acceleration limits (gentle; tune later if needed).
+    linear.x.has_velocity_limits: true
+    linear.x.has_acceleration_limits: true
+    linear.x.max_velocity: 1.0
+    linear.x.min_velocity: -1.0
+    linear.x.max_acceleration: 1.0
+    linear.x.min_acceleration: -1.0
+
+    angular.z.has_velocity_limits: true
+    angular.z.has_acceleration_limits: true
+    angular.z.max_velocity: 2.0
+    angular.z.min_velocity: -2.0
+    angular.z.max_acceleration: 2.0
+    angular.z.min_acceleration: -2.0

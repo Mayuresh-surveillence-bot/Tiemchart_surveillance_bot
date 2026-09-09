@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+  ros2_control hardware description for the differential-drive base.
+
+  This declares the control INTERFACES only; it does not choose or configure
+  controllers (that is controllers.yaml). Under Gazebo the hardware plugin is
+  gz_ros2_control/GazeboSimSystem, which bridges these joint interfaces to the
+  simulated joints.
+
+  Command interface : velocity   (diff_drive_controller writes wheel speeds)
+  State interfaces  : position + velocity (fed back for odometry + TF)
+
+  The joint names MUST match the continuous joints defined in wheels.xacro:
+    left_wheel_joint / right_wheel_joint
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="diff_drive_ros2_control">
+    <ros2_control name="GazeboSimSystem" type="system">
+      <hardware>
+        <!-- Jazzy + Gazebo Harmonic hardware plugin. -->
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </hardware>
+
+      <joint name="left_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <joint name="right_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+    </ros2_control>
+  </xacro:macro>
+
+</robot>

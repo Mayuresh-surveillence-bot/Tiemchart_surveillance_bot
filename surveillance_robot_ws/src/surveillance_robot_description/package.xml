@@ -16,6 +16,10 @@
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
 
+  <!-- Simulation-only interfaces referenced by ros2_control.xacro / gazebo.xacro
+       (pulled in when the model is built with sim_mode:=true). -->
+  <exec_depend>gz_ros2_control</exec_depend>
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

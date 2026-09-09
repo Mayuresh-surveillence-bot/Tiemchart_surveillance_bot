@@ -4,11 +4,31 @@
 
   This file only wires the modular pieces together in the correct order:
     dimensions  -> materials -> inertial macros -> chassis -> wheels -> sensors
+    -> (simulation-only) ros2_control + gazebo
 
   Ordering matters: properties and macros must be defined before the files that
   consume them. No geometry or dimensions are declared here directly.
+
+  Simulation gating:
+  sim_mode (arg, default false):
+      false -> pure kinematic description (Chunk 2 behaviour, RViz/xacro only).
+               No ros2_control, no Gazebo plugins. Fully backward compatible.
+      true  -> also pull in the ros2_control hardware block and the gz-sim
+               plugins so the model can be spawned and driven in Gazebo.
+
+  controllers_file (arg):
+      Absolute path to the ros2_control YAML handed to the gz_ros2_control
+      plugin. Defaults to the installed surveillance_robot_gazebo config so the
+      description stays reusable but works out-of-the-box under simulation.
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="surveillance_robot">
+
+  <!-- Simulation switches. -->
+  <xacro:arg name="sim_mode" default="false"/>
+  <xacro:arg name="controllers_file"
+             default="$(find surveillance_robot_gazebo)/config/controllers.yaml"/>
+
+  <xacro:property name="sim_mode" value="$(arg sim_mode)"/>
 
   <!-- Parameters and reusable building blocks (must come first). -->
   <xacro:include filename="$(find surveillance_robot_description)/urdf/dimensions.xacro"/>
@@ -21,5 +41,14 @@
 
   <!-- Structural sensor mounting frames (no sensors attached yet). -->
   <xacro:include filename="$(find surveillance_robot_description)/urdf/sensors.xacro"/>
+
+  <!-- Simulation-only: ros2_control interfaces + Gazebo plugins/friction. -->
+  <xacro:if value="${sim_mode}">
+    <xacro:include filename="$(find surveillance_robot_description)/urdf/ros2_control.xacro"/>
+    <xacro:include filename="$(find surveillance_robot_description)/urdf/gazebo.xacro"/>
+
+    <xacro:diff_drive_ros2_control/>
+    <xacro:gazebo_sim controllers_file="$(arg controllers_file)"/>
+  </xacro:if>
 
 </robot>

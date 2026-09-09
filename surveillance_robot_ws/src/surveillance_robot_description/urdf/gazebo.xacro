@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!--
+  Gazebo (Harmonic / gz-sim) specific tags for the surveillance robot.
+
+  Two responsibilities:
+    1. Load the gz_ros2_control system plugin and hand it the controller
+       configuration YAML. The YAML path is passed in as an argument so the
+       reusable robot description does not hardcode a sibling package path.
+    2. Give the wheels realistic ground friction and the chassis low friction,
+       so the robot drives instead of sliding like an ice puck (spec section 15)
+       and does not skate sideways.
+
+  Only pulled in when the model is built for simulation (sim_mode:=true); the
+  pure-visualization path from Chunk 2 never includes this file.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="gazebo_sim" params="controllers_file">
+
+    <!-- ros2_control <-> gz-sim bridge. Loads controllers.yaml at spawn. -->
+    <gazebo>
+      <plugin filename="gz_ros2_control-system"
+              name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>${controllers_file}</parameters>
+      </plugin>
+    </gazebo>
+
+    <!-- Drive wheels: high friction, no bounce, so torque becomes motion. -->
+    <xacro:macro name="wheel_friction" params="link">
+      <gazebo reference="${link}">
+        <mu1>1.0</mu1>
+        <mu2>1.0</mu2>
+        <kp>1000000.0</kp>
+        <kd>100.0</kd>
+        <minDepth>0.001</minDepth>
+        <maxContacts>1</maxContacts>
+      </gazebo>
+    </xacro:macro>
+
+    <xacro:wheel_friction link="left_wheel_link"/>
+    <xacro:wheel_friction link="right_wheel_link"/>
+
+    <!-- Chassis: low friction so a dragging corner never fights the wheels. -->
+    <gazebo reference="chassis_link">
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>
