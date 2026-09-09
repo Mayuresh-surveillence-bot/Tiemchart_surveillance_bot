@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!--
+  base_footprint  -> base_link  -> chassis body.
+
+  base_footprint : ground-projected 2D navigation reference (z = 0 on the
+                   floor). Nav2 and the costmaps reason in this frame, so it
+                   must lie on the ground plane directly under the robot.
+  base_link      : main kinematic reference, placed at wheel-axis height so the
+                   two drive wheels rotate about base_link z = 0.
+
+  The chassis is a primitive box (visual + collision + inertial). It is drawn
+  as a child of base_link via a fixed joint rather than being base_link itself,
+  which keeps base_link a clean reference frame.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 2D navigation reference on the ground plane. -->
+  <link name="base_footprint"/>
+
+  <!--
+    Lift base_link to the wheel axis. base_footprint is on the ground, the
+    wheel axis is wheel_radius above the ground.
+  -->
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child  link="base_link"/>
+    <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Pure reference frame; geometry lives on the chassis link. -->
+  <link name="base_link"/>
+
+  <!--
+    Chassis vertical placement relative to base_link:
+      chassis bottom must sit at ground_clearance above the floor.
+      floor -> base_link is wheel_radius, so bottom offset = ground_clearance - wheel_radius.
+      centre offset = bottom offset + chassis_height/2.
+  -->
+  <xacro:property name="chassis_zoff"
+                  value="${ground_clearance - wheel_radius + chassis_height/2.0}"/>
+
+  <joint name="chassis_joint" type="fixed">
+    <parent link="base_link"/>
+    <child  link="chassis_link"/>
+    <origin xyz="0 0 ${chassis_zoff}" rpy="0 0 0"/>
+  </joint>
+
+  <link name="chassis_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+      <material name="chassis_grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </collision>
+
+    <xacro:inertial_box mass="${chassis_mass}"
+                        x="${chassis_length}" y="${chassis_width}" z="${chassis_height}">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+</robot>

@@ -8,8 +8,9 @@ endif()
 find_package(ament_cmake REQUIRED)
 
 # Install resource directories so they are discoverable at
-# share/surveillance_robot_description/ after building. These are empty in
-# Chunk 1 and will be populated in later chunks.
+# share/surveillance_robot_description/ after building. The description is
+# loaded from the INSTALLED share path (via $(find ...)), never from the
+# source tree, so every resource the launch file needs is installed here.
 install(
   DIRECTORY urdf meshes rviz config launch
   DESTINATION share/${PROJECT_NAME}

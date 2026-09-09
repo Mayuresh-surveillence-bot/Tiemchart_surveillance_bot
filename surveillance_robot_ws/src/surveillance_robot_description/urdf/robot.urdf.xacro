@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+  Top-level robot description for the surveillance robot.
+
+  This file only wires the modular pieces together in the correct order:
+    dimensions  -> materials -> inertial macros -> chassis -> wheels -> sensors
+
+  Ordering matters: properties and macros must be defined before the files that
+  consume them. No geometry or dimensions are declared here directly.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="surveillance_robot">
+
+  <!-- Parameters and reusable building blocks (must come first). -->
+  <xacro:include filename="$(find surveillance_robot_description)/urdf/dimensions.xacro"/>
+  <xacro:include filename="$(find surveillance_robot_description)/urdf/materials.xacro"/>
+  <xacro:include filename="$(find surveillance_robot_description)/urdf/inertial_macros.xacro"/>
+
+  <!-- Physical structure. -->
+  <xacro:include filename="$(find surveillance_robot_description)/urdf/chassis.xacro"/>
+  <xacro:include filename="$(find surveillance_robot_description)/urdf/wheels.xacro"/>
+
+  <!-- Structural sensor mounting frames (no sensors attached yet). -->
+  <xacro:include filename="$(find surveillance_robot_description)/urdf/sensors.xacro"/>
+
+</robot>
