@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 <!--
-  STRUCTURAL sensor mounting frames only. No Gazebo sensors, no plugins, no
-  data topics yet. Chunk 4 will attach the actual LiDAR / camera / IMU to these
-  frames.
+  STRUCTURAL sensor mounting frames only. Gazebo sensors and topic configuration
+  live separately in surveillance_robot_gazebo/urdf/gazebo_sensors.xacro and are
+  attached only when sim_mode is enabled.
 
   Frame conventions (REP 103): x = forward, y = left, z = up.
 
   laser_link  : upright, axes aligned with base_link (LiDAR scans in its xy).
-  camera_link : mounting frame aligned with base_link, +x forward. The optical
-                frame (z-forward, x-right) is intentionally NOT created here;
-                it belongs with the camera sensor in Chunk 4.
+  camera_link : mounting frame aligned with base_link, +x forward. Its optical
+                child uses z-forward, x-right, y-down for ROS camera messages.
   imu_link    : aligned with base_link.
 
   Small visual markers are included purely so the mounts are visible in RViz.
@@ -67,6 +66,15 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </xacro:inertial_box>
   </link>
+
+  <!-- The optical origin is co-located with the mount: +z forward, +x right,
+       +y down. robot_state_publisher is the only publisher of this fixed TF. -->
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <origin xyz="0 0 0" rpy="${-PI_2} 0 ${-PI_2}"/>
+  </joint>
+  <link name="camera_optical_frame"/>
 
   <!-- ================= IMU mount ================= -->
   <joint name="imu_joint" type="fixed">

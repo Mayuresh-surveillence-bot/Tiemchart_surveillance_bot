@@ -39,7 +39,7 @@
   <xacro:include filename="$(find surveillance_robot_description)/urdf/chassis.xacro"/>
   <xacro:include filename="$(find surveillance_robot_description)/urdf/wheels.xacro"/>
 
-  <!-- Structural sensor mounting frames (no sensors attached yet). -->
+  <!-- Structural sensor mounting frames, including the camera optical frame. -->
   <xacro:include filename="$(find surveillance_robot_description)/urdf/sensors.xacro"/>
 
   <!-- Simulation-only: ros2_control interfaces + Gazebo plugins/friction. -->
@@ -47,8 +47,13 @@
     <xacro:include filename="$(find surveillance_robot_description)/urdf/ros2_control.xacro"/>
     <xacro:include filename="$(find surveillance_robot_description)/urdf/gazebo.xacro"/>
 
+    <xacro:include filename="$(find surveillance_robot_gazebo)/urdf/gazebo_sensors.xacro"/>
+    <xacro:arg name="sensors_file"
+               default="$(find surveillance_robot_gazebo)/config/sensors.yaml"/>
+
     <xacro:diff_drive_ros2_control/>
     <xacro:gazebo_sim controllers_file="$(arg controllers_file)"/>
+    <xacro:gazebo_sensors config_file="$(arg sensors_file)"/>
   </xacro:if>
 
 </robot>

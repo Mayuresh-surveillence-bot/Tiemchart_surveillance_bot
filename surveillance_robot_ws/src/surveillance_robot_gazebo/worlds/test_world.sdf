@@ -2,8 +2,9 @@
 <!--
   Minimal test world for Gazebo Harmonic (gz-sim), ROS 2 Jazzy.
 
-  Contains only what Chunk 3 needs: physics, lighting, a ground plane, and a
-  couple of static walls for collision testing. NO rooms, corridors, or
+  Retains the Chunk 3 physics, lighting, ground plane, and two static walls
+  for collision and sensor testing. Chunk 4 adds sensor systems, not rooms or
+  corridors. NO rooms, corridors, or
   surveillance zones (those belong to a later chunk).
 
   The four system plugins are the standard gz-sim set required for a spawned,
@@ -31,6 +32,14 @@
             name="gz::sim::systems::SceneBroadcaster"/>
     <plugin filename="gz-sim-contact-system"
             name="gz::sim::systems::Contact"/>
+
+    <!-- Rendering-based LiDAR/camera and physics-based IMU use separate systems. -->
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu"/>
 
     <gravity>0 0 -9.81</gravity>
 

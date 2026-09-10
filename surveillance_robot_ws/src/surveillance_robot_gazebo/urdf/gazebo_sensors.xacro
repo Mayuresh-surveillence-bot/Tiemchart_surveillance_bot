@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="gazebo_sensors" params="config_file">
+    <xacro:property name="sensor_config" value="${xacro.load_yaml(config_file)}"/>
+    <xacro:property name="lidar" value="${sensor_config['lidar']}"/>
+    <xacro:property name="camera" value="${sensor_config['camera']}"/>
+    <xacro:property name="imu" value="${sensor_config['imu']}"/>
+
+    <!-- Keep these mounting links in SDF instead of lumping them into base_link. -->
+    <gazebo reference="laser_joint"><preserveFixedJoint>true</preserveFixedJoint></gazebo>
+    <gazebo reference="camera_joint"><preserveFixedJoint>true</preserveFixedJoint></gazebo>
+    <gazebo reference="imu_joint"><preserveFixedJoint>true</preserveFixedJoint></gazebo>
+
+    <gazebo reference="laser_link">
+      <sensor name="lidar" type="gpu_lidar">
+        <pose>0 0 0 0 0 0</pose>
+        <topic>/scan</topic>
+        <gz_frame_id>laser_link</gz_frame_id>
+        <always_on>true</always_on>
+        <update_rate>${lidar['update_rate']}</update_rate>
+        <visualize>false</visualize>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>${lidar['samples']}</samples>
+              <resolution>1</resolution>
+              <min_angle>${lidar['min_angle']}</min_angle>
+              <max_angle>${lidar['max_angle']}</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>0</min_angle>
+              <max_angle>0</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>${lidar['min_range']}</min>
+            <max>${lidar['max_range']}</max>
+            <resolution>${lidar['range_resolution']}</resolution>
+          </range>
+          <noise type="gaussian">
+            <mean>0</mean>
+            <stddev>${lidar['noise_stddev']}</stddev>
+          </noise>
+        </lidar>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="camera_link">
+      <sensor name="camera" type="camera">
+        <!-- Gazebo cameras look along +x; do not rotate the rendering sensor
+             into the ROS optical frame a second time. -->
+        <pose>0 0 0 0 0 0</pose>
+        <topic>/camera/image_raw</topic>
+        <gz_frame_id>camera_optical_frame</gz_frame_id>
+        <always_on>true</always_on>
+        <update_rate>${camera['update_rate']}</update_rate>
+        <visualize>false</visualize>
+        <camera>
+          <optical_frame_id>camera_optical_frame</optical_frame_id>
+          <camera_info_topic>/camera/camera_info</camera_info_topic>
+          <horizontal_fov>${camera['horizontal_fov']}</horizontal_fov>
+          <image>
+            <width>${camera['width']}</width>
+            <height>${camera['height']}</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>${camera['near_clip']}</near>
+            <far>${camera['far_clip']}</far>
+          </clip>
+          <noise type="gaussian">
+            <mean>0</mean>
+            <stddev>${camera['noise_stddev']}</stddev>
+          </noise>
+        </camera>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="imu_link">
+      <sensor name="imu" type="imu">
+        <pose>0 0 0 0 0 0</pose>
+        <topic>/imu/data</topic>
+        <gz_frame_id>imu_link</gz_frame_id>
+        <always_on>true</always_on>
+        <update_rate>${imu['update_rate']}</update_rate>
+        <imu>
+          <!-- ENU is the test world's orientation, not a localization estimate. -->
+          <orientation_reference_frame><localization>ENU</localization></orientation_reference_frame>
+          <angular_velocity>
+            <x><noise type="gaussian"><mean>0</mean><stddev>${imu['angular_velocity_noise_stddev']}</stddev></noise></x>
+            <y><noise type="gaussian"><mean>0</mean><stddev>${imu['angular_velocity_noise_stddev']}</stddev></noise></y>
+            <z><noise type="gaussian"><mean>0</mean><stddev>${imu['angular_velocity_noise_stddev']}</stddev></noise></z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x><noise type="gaussian"><mean>0</mean><stddev>${imu['linear_acceleration_noise_stddev']}</stddev></noise></x>
+            <y><noise type="gaussian"><mean>0</mean><stddev>${imu['linear_acceleration_noise_stddev']}</stddev></noise></y>
+            <z><noise type="gaussian"><mean>0</mean><stddev>${imu['linear_acceleration_noise_stddev']}</stddev></noise></z>
+          </linear_acceleration>
+        </imu>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</robot>
