@@ -12,8 +12,10 @@ The controllers are chained with event handlers so they load in the correct
 order once the entity exists. The controller manager itself is started by the
 gz_ros2_control plugin embedded in the URDF, not here.
 
-This launch starts ONLY simulation + control. No SLAM, Nav2, localization, or
-patrol (those belong to later chunks).
+The sensor bridge starts alongside the clock bridge and forwards LiDAR, camera,
+and IMU messages once the spawned robot's Gazebo sensors produce data.
+This launch starts ONLY simulation + control + sensors. No SLAM, Nav2,
+localization, or patrol (those belong to later chunks).
 """
 
 from launch import LaunchDescription
@@ -38,6 +40,9 @@ def generate_launch_description() -> LaunchDescription:
     xacro_file = PathJoinSubstitution([pkg_description, "urdf", "robot.urdf.xacro"])
     controllers_file = PathJoinSubstitution([pkg_gazebo, "config", "controllers.yaml"])
     world_file = PathJoinSubstitution([pkg_gazebo, "worlds", "test_world.sdf"])
+    sensor_bridges_file = PathJoinSubstitution(
+        [pkg_gazebo, "config", "sensor_bridges.yaml"]
+    )
 
     use_rviz = LaunchConfiguration("use_rviz")
 
@@ -84,6 +89,14 @@ def generate_launch_description() -> LaunchDescription:
         executable="parameter_bridge",
         name="clock_bridge",
         arguments=["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"],
+        output="screen",
+    )
+
+    sensor_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        name="sensor_bridge",
+        parameters=[{"config_file": sensor_bridges_file, "use_sim_time": True}],
         output="screen",
     )
 
@@ -155,6 +168,7 @@ def generate_launch_description() -> LaunchDescription:
             gz_sim,
             robot_state_publisher,
             clock_bridge,
+            sensor_bridge,
             spawn_robot,
             load_jsb_after_spawn,
             load_diff_after_jsb,
