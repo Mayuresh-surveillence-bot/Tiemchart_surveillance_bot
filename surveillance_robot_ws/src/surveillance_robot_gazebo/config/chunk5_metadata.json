@@ -1,0 +1,14 @@
+{
+  "ground_xy_bounds_m": [
+    -25,
+    25
+  ],
+  "ground_z_scale": 0.212975,
+  "ground_z_offset_m": 0.0788016,
+  "collision_grid": "101x101 (0.5 m)",
+  "ground_friction_mu": 0.75,
+  "ground_friction_mu2": 0.75,
+  "physics_step_s": 0.001,
+  "collision_proxy_parts": 535,
+  "visual_source": "construction_site_ground_50x50.glb"
+}

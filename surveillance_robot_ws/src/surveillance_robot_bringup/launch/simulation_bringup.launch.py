@@ -35,16 +35,36 @@ def generate_launch_description() -> LaunchDescription:
         description="Start RViz2 with the robot/TF/odometry display.",
     )
 
+    world_arguments = [
+        DeclareLaunchArgument(
+            "world", default_value="construction_site_chunk5",
+            choices=["construction_site_chunk5", "test_world"],
+        ),
+        DeclareLaunchArgument(
+            "site_visual", default_value="auto", choices=["auto", "true", "false"],
+        ),
+        DeclareLaunchArgument("spawn_x", default_value="auto"),
+        DeclareLaunchArgument("spawn_y", default_value="auto"),
+        DeclareLaunchArgument("spawn_z", default_value="0.15"),
+        DeclareLaunchArgument("spawn_yaw", default_value="0.0"),
+    ]
+
     simulation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([pkg_gazebo, "launch", "simulation.launch.py"])
         ),
-        launch_arguments={"use_rviz": use_rviz}.items(),
+        launch_arguments={
+            "use_rviz": use_rviz,
+            **{name: LaunchConfiguration(name) for name in (
+                "world", "site_visual", "spawn_x", "spawn_y", "spawn_z", "spawn_yaw"
+            )},
+        }.items(),
     )
 
     return LaunchDescription(
         [
             declare_use_rviz,
+            *world_arguments,
             simulation,
         ]
     )
