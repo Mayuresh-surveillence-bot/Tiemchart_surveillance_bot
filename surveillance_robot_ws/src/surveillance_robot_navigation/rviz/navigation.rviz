@@ -1,0 +1,73 @@
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Map
+      Name: Map
+      Enabled: true
+      Topic: {Value: /map, Durability Policy: Transient Local, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Show Axes: true
+      Show Arrows: true
+      Show Names: true
+      Marker Scale: 0.35
+    - Class: rviz_default_plugins/RobotModel
+      Name: RobotModel
+      Enabled: true
+      Description Source: Topic
+      Description Topic: {Value: /robot_description, Durability Policy: Transient Local, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+    - Class: rviz_default_plugins/LaserScan
+      Name: LaserScan
+      Enabled: true
+      Topic: {Value: /scan, Reliability Policy: Best Effort, History Policy: Keep Last, Depth: 5}
+      Style: Points
+      Size (m): 0.03
+    - Class: rviz_default_plugins/PoseWithCovariance
+      Name: AMCL Pose
+      Enabled: true
+      Topic: {Value: /amcl_pose, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+    - Class: rviz_default_plugins/Map
+      Name: Global Costmap
+      Enabled: true
+      Alpha: 0.45
+      Topic: {Value: /global_costmap/costmap, Durability Policy: Transient Local, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+    - Class: rviz_default_plugins/Map
+      Name: Local Costmap
+      Enabled: true
+      Alpha: 0.45
+      Topic: {Value: /local_costmap/costmap, Durability Policy: Transient Local, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+    - Class: rviz_default_plugins/Path
+      Name: Global Path
+      Enabled: true
+      Color: 0; 255; 0
+      Line Style: Lines
+      Line Width: 0.05
+      Topic: {Value: /plan, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+    - Class: rviz_default_plugins/Path
+      Name: Local Path
+      Enabled: true
+      Color: 255; 0; 0
+      Line Style: Lines
+      Line Width: 0.05
+      Topic: {Value: /local_plan, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+  Global Options:
+    Fixed Frame: map
+    Background Color: 48; 48; 48
+    Frame Rate: 30
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/SetInitialPose
+      Topic: {Value: /initialpose, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+    - Class: nav2_rviz_plugins/GoalTool
+      Topic: {Value: /goal_pose, Reliability Policy: Reliable, History Policy: Keep Last, Depth: 5}
+  Transformation: {Current: {Class: rviz_default_plugins/TF}}
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Target Frame: map
+      Distance: 20
+      Pitch: 0.785
+      Yaw: 0.785
+Window Geometry: {Width: 1280, Height: 900}
