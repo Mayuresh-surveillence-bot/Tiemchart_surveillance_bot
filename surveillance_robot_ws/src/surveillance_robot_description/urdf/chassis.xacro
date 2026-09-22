@@ -1,59 +1,59 @@
 <?xml version="1.0"?>
 <!--
-  base_footprint  -> base_link  -> chassis body.
+  base_footprint -> base_link -> chassis body.
 
-  base_footprint : ground-projected 2D navigation reference (z = 0 on the
-                   floor). Nav2 and the costmaps reason in this frame, so it
-                   must lie on the ground plane directly under the robot.
-  base_link      : main kinematic reference, placed at wheel-axis height so the
-                   two drive wheels rotate about base_link z = 0.
+  base_footprint : ground-projected 2D navigation reference. It remains on the
+                   floor directly below the robot.
+  base_link      : main kinematic reference at wheel-axis height.
 
-  The chassis is a primitive box (visual + collision + inertial). It is drawn
-  as a child of base_link via a fixed joint rather than being base_link itself,
-  which keeps base_link a clean reference frame.
+  The GLB below is visual-only. Existing collision geometry, inertial values,
+  wheel joints, TF frames, and ros2_control configuration remain unchanged.
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <!-- 2D navigation reference on the ground plane. -->
+  <!-- Ground-projected 2D navigation reference. -->
   <link name="base_footprint"/>
 
-  <!--
-    Lift base_link to the wheel axis. base_footprint is on the ground, the
-    wheel axis is wheel_radius above the ground.
-  -->
+  <!-- Lift base_link from the ground to the wheel-axis height. -->
   <joint name="base_footprint_joint" type="fixed">
     <parent link="base_footprint"/>
-    <child  link="base_link"/>
+    <child link="base_link"/>
     <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
   </joint>
 
-  <!-- Pure reference frame; geometry lives on the chassis link. -->
+  <!-- Kinematic reference frame; chassis geometry is attached below. -->
   <link name="base_link"/>
 
-  <!--
-    Chassis vertical placement relative to base_link:
-      chassis bottom must sit at ground_clearance above the floor.
-      floor -> base_link is wheel_radius, so bottom offset = ground_clearance - wheel_radius.
-      centre offset = bottom offset + chassis_height/2.
-  -->
-  <xacro:property name="chassis_zoff"
-                  value="${ground_clearance - wheel_radius + chassis_height/2.0}"/>
+  <!-- Chassis center relative to base_link. -->
+  <xacro:property
+    name="chassis_zoff"
+    value="${ground_clearance - wheel_radius + chassis_height / 2.0}"/>
 
   <joint name="chassis_joint" type="fixed">
     <parent link="base_link"/>
-    <child  link="chassis_link"/>
+    <child link="chassis_link"/>
     <origin xyz="0 0 ${chassis_zoff}" rpy="0 0 0"/>
   </joint>
 
   <link name="chassis_link">
-<visual>
-  <origin xyz="0 0 0.15" rpy="0 0 0"/>
-  <geometry>
-    <mesh filename="package://surveillance_robot_description/meshes/surveillance_robot.glb"
-          scale="0.25 0.25 0.25"/>
-  </geometry>
-</visual>
 
+    <!--
+      Visual-only robot appearance.
+
+      The supplied GLB is fitted to the existing 0.50 m chassis with an initial
+      uniform scale of 0.25. Adjust only this visual origin/scale after checking
+      it in Gazebo; do not alter the collision model or robot frames to fit it.
+    -->
+    <visual>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <geometry>
+        <mesh
+          filename="package://surveillance_robot_description/meshes/surveillance_robot.glb"
+          scale="0.25 0.25 0.25"/>
+      </geometry>
+    </visual>
+
+    <!-- Preserve the existing physical collision envelope. -->
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -61,10 +61,15 @@
       </geometry>
     </collision>
 
-    <xacro:inertial_box mass="${chassis_mass}"
-                        x="${chassis_length}" y="${chassis_width}" z="${chassis_height}">
+    <!-- Preserve the existing mass and inertial model. -->
+    <xacro:inertial_box
+      mass="${chassis_mass}"
+      x="${chassis_length}"
+      y="${chassis_width}"
+      z="${chassis_height}">
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </xacro:inertial_box>
+
   </link>
 
 </robot>
