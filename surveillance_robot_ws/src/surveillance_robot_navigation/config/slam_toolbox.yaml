@@ -1,0 +1,55 @@
+slam_toolbox:
+  ros__parameters:
+    # Simulation clock is bridged from Gazebo by surveillance_robot_gazebo.
+    use_sim_time: true
+
+    # Existing robot interfaces. Do not add another odometry or TF source.
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_footprint
+    scan_topic: /scan
+
+    # Online asynchronous mapping.
+    mode: mapping
+    debug_logging: false
+    throttle_scans: 1
+    transform_publish_period: 0.05
+    transform_timeout: 0.2
+    tf_buffer_duration: 30.0
+
+    # Map output for the construction-site scale and 12 m simulated LiDAR range.
+    resolution: 0.05
+    max_laser_range: 12.0
+    map_update_interval: 2.0
+    minimum_time_interval: 0.5
+
+    # Update only after meaningful robot motion to limit near-duplicate scans.
+    minimum_travel_distance: 0.10
+    minimum_travel_heading: 0.10
+
+    # Scan matching and pose-graph configuration for static walls and structures.
+    use_scan_matching: true
+    use_scan_barycenter: true
+    scan_buffer_size: 10
+    scan_buffer_maximum_scan_distance: 15.0
+    link_scan_maximum_distance: 1.5
+    link_match_minimum_response_fine: 0.1
+    do_loop_closing: true
+    loop_search_maximum_distance: 3.0
+    loop_match_minimum_chain_size: 10
+    loop_match_maximum_variance: 3.0
+    loop_match_minimum_response_coarse: 0.35
+    loop_match_minimum_response_fine: 0.45
+
+    # Ceres scan-matching solver.
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: SCHUR_JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+    ceres_loss_function: None
+
+    # Mapping is live. Save final maps with nav2_map_server map_saver_cli.
+    use_map_saver: false
+    enable_interactive_mode: true
+    stack_size_to_use: 40000000

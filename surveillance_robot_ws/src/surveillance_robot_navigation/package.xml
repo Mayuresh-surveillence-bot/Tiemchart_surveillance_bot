@@ -3,16 +3,18 @@
 <package format="3">
   <name>surveillance_robot_navigation</name>
   <version>0.1.0</version>
-  <description>Mapping, localization, and Nav2 configuration, maps, and launch files for the surveillance robot.</description>
+  <description>SLAM mapping configuration, maps, RViz, and future navigation resources for the surveillance robot.</description>
   <maintainer email="your_email@example.com">Your Name</maintainer>
   <license>Apache-2.0</license>
-
   <buildtool_depend>ament_cmake</buildtool_depend>
-
+  <!-- Chunk 6: online 2D mapping only. No Nav2 stack is launched. -->
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <!-- Used only by the documented map_saver_cli command after a useful map exists. -->
+  <exec_depend>nav2_map_server</exec_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-
-  <export>
-    <build_type>ament_cmake</build_type>
-  </export>
+  <export><build_type>ament_cmake</build_type></export>
 </package>
