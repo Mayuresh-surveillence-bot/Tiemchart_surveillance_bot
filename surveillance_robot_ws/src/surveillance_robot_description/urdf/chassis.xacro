@@ -46,13 +46,13 @@
   </joint>
 
   <link name="chassis_link">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
-      </geometry>
-      <material name="chassis_grey"/>
-    </visual>
+<visual>
+  <origin xyz="0 0 0.15" rpy="0 0 0"/>
+  <geometry>
+    <mesh filename="package://surveillance_robot_description/meshes/surveillance_robot.glb"
+          scale="0.25 0.25 0.25"/>
+  </geometry>
+</visual>
 
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
